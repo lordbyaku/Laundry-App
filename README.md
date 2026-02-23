@@ -1,67 +1,83 @@
-# Laundry App UI
+# Laundry Komersial Indonesia (Android + Supabase)
 
-[![Platform](https://img.shields.io/badge/platform-Android-yellow.svg)](https://www.android.com)
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Gradle Version](https://img.shields.io/badge/gradle-4.0-green.svg)](https://docs.gradle.org/current/release-notes)
-[![Awesome Badge](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://java-lang.github.io/awesome-java)
+Aplikasi Android untuk operasional laundry komersial Indonesia dengan Bahasa Indonesia dan mata uang IDR/Rp.
 
-🛁 A beautiful Laundry App UI written in Java for android with examples.
+## Fitur yang sudah di aplikasi Android
 
-# Source
-Repo to demonstrate Laundry App UI in Android app. This is a follow up on the source at :
+- Lisensi komersial bulanan (30 hari) & tahunan (365 hari).
+- Masa tenggang lisensi 3 hari dalam mode **read-only**.
+- Input pesanan + registrasi pelanggan baru (nama, no telepon, alamat).
+- Barcode order, scan barcode untuk update status:
+  - Pesanan masuk → Sedang dicuci → Selesai dicuci → Sudah diambil
+- Struk teks untuk printer Bluetooth POS 58mm.
+- Notifikasi WhatsApp saat status berubah (via API).
 
-- [Dribble](https://dribbble.com/tags/laundry_app)
-- [Medium](https://medium.com/@RayLiVerified/create-a-bottom-navigation-bar-the-easy-way-part-1-ec2f5f9122b)
-- [Flat Icon](https://www.flaticon.com)
-- [UnDraw Illustration](https://undraw.co)
-- [Alvarcarto Maps](https://alvarcarto.com)
-- etc.
+## Keamanan konfigurasi
 
-# Demo App
+Kunci API **tidak** lagi di-hardcode di source code. Konfigurasi diambil dari Gradle property.
 
-<p align="center">
-  <a href="https://github.com/achmadqomarudin/Laundry-App-UI/releases/latest/download/app-demo.apk">
-    <img src="https://www.inspirefm.org/wp-content/uploads/button-apk.png" height="100">
-  </a>
-</p>
+Tambahkan di `~/.gradle/gradle.properties` (direkomendasikan):
 
-<table style="width:100%">
-  <tr>
-    <th>Example 1</th>
-    <th>Example 2</th>
-    <th>Example 3</th>
-  </tr>
-  <tr>
-    <td><img src="screenshots/1.gif"/></td>
-    <td><img src="screenshots/2.jpg"/></td>
-    <td><img src="screenshots/3.jpg"/></td>
-  </tr>
-  <tr>
-    <th>Example 4</th>
-    <th>Example 5</th>
-    <th>Example 6</th>
-  </tr>
-  <tr>
-    <td><img src="screenshots/4.jpg"/></td>
-    <td><img src="screenshots/5.jpg"/></td>
-    <td><img src="screenshots/6.jpg"/></td>
-  </tr>
-</table>
-
-# License
-
+```properties
+SUPABASE_URL=https://azfapaanqsurkreczxwh.supabase.co
+SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+WA_REMINDER_API_URL=https://reminder.famstory.my.id/api/send-message
+WA_REMINDER_API_KEY=YOUR_WA_API_KEY
+OWNER_EMAIL=lordbyaku@gmail.com
 ```
-    Copyright (C) Achmad Qomarudin
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+> Jangan pernah menaruh `service_role` di aplikasi Android.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+## Setup Supabase (multi-tenant production)
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+File SQL lengkap sudah disiapkan di:
+
+- `supabase/schema.sql`
+
+Mencakup:
+
+- Multi-tenant isolation dengan RLS.
+- Role user: `owner`, `kasir`, `operator`, `admin`.
+- Mapping akses user ke banyak tenant (`user_tenants`).
+- Lisensi + grace period + pembayaran manual transfer.
+- Tabel layanan yang bisa didefinisikan owner/operator/admin.
+- Log WhatsApp sukses/gagal (`wa_message_logs`).
+- View laporan operasional.
+
+### Cara eksekusi
+
+1. Buka **Supabase SQL Editor**.
+2. Jalankan isi `supabase/schema.sql`.
+3. Siapkan user pertama sebagai `admin` di tabel `profiles`.
+4. Assign tenant via `user_tenants`.
+
+
+### Seed data demo
+
+Untuk membuat data demo tenant + admin sesuai permintaan, jalankan:
+
+- `supabase/seed_demo_laundry.sql`
+
+Script ini akan:
+- membuat tenant `DEMO LAUNDRY`,
+- menambahkan layanan default,
+- menambahkan lisensi bulanan aktif,
+- mengatur user `na_grow@yahoo.com` sebagai global `admin` + admin tenant.
+
+## Laporan lengkap + download Excel/PDF
+
+Untuk kebutuhan laporan lengkap dan export Excel/PDF, gunakan kombinasi:
+
+1. View SQL (`v_laporan_harian`, `v_order_belum_diambil`, `v_repeat_customer`) yang sudah dibuat.
+2. Supabase Edge Function / backend API untuk:
+   - ambil data laporan,
+   - generate file `.xlsx` dan `.pdf`,
+   - simpan ke Supabase Storage,
+   - return URL download terproteksi.
+
+## Build
+
+```bash
+./gradlew assembleDebug
 ```
+

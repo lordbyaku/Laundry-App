@@ -1,18 +1,17 @@
 <resources>
-    <string name="app_name">Laundry App UI</string>
-    <string name="menu_home">Home</string>
-    <string name="menu_search">Search</string>
-    <string name="menu_notification">Notification</string>
-    <string name="menu_message">Message</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="version_app">version 1.1</string>
-    <string name="recommended">Recommended</string>
-    <string name="more">More</string>
-    <string name="dry_cleaning">Dry Cleaning</string>
-    <string name="wash_and_iron"><![CDATA[Wash & Iron]]></string>
-    <string name="ironing">Ironing</string>
-    <string name="choose_services">Choose Services</string>
+    <string name="app_name">Laundry Komersial ID</string>
+    <string name="menu_home">Beranda</string>
+    <string name="menu_search">Cari</string>
+    <string name="menu_notification">Notifikasi</string>
+    <string name="menu_message">Pesan</string>
+    <string name="hello_blank_fragment">Halo</string>
+    <string name="navigation_drawer_open">Buka navigasi</string>
+    <string name="navigation_drawer_close">Tutup navigasi</string>
+    <string name="version_app">versi 2.0</string>
+    <string name="recommended">Rekomendasi</string>
+    <string name="more">Lainnya</string>
+    <string name="dry_cleaning">Cuci Kering</string>
+    <string name="wash_and_iron">Cuci &amp; Setrika</string>
+    <string name="ironing">Setrika</string>
+    <string name="choose_services">Pilih Layanan</string>
 </resources>
