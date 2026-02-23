@@ -2,6 +2,7 @@ package com.project.laundryappui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
