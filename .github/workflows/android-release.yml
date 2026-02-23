@@ -31,15 +31,9 @@ jobs:
           # Accept licenses (sdkmanager may close early causing broken pipe; ignore non-zero)
           # Create licenses directory and write common accepted license fingerprints
           mkdir -p $ANDROID_SDK_ROOT/licenses
-          cat > $ANDROID_SDK_ROOT/licenses/android-sdk-license <<'EOF'
-24333f8a63b6825ea9c5514f83c2829b004d1fee
-EOF
-          cat > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license <<'EOF'
-84831b9409646a918e30573bab4c9c91346d8ab1
-EOF
-          cat > $ANDROID_SDK_ROOT/licenses/intel-android-extra-license <<'EOF'
-d56f5187479451eabf01fb78af6dfcb131a6481e
-EOF
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "84831b9409646a918e30573bab4c9c91346d8ab1" > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license
+          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_SDK_ROOT/licenses/intel-android-extra-license
 
           # Accept licenses (sdkmanager may close early causing broken pipe; ignore non-zero)
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses || true
