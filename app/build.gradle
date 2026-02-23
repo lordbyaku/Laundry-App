@@ -28,7 +28,7 @@ android {
             // Provide these in ~/.gradle/gradle.properties or CI secret env
             def storeFileProp = project.findProperty('KEYSTORE_FILE') ?: ''
             if (storeFileProp) {
-                storeFile file(storeFileProp)
+                storeFile rootProject.file(storeFileProp)
             }
             storePassword project.findProperty('KEYSTORE_PASSWORD') ?: ''
             keyAlias project.findProperty('KEY_ALIAS') ?: ''
