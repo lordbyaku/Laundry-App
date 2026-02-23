@@ -1,0 +1,5 @@
+# Local SDK, local gradle props and keystore
+local.properties
+/.gradle
+*.jks
+keystore.jks
