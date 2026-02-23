@@ -28,8 +28,23 @@ jobs:
           unzip -q cmdline.zip -d $ANDROID_SDK_ROOT/cmdline-tools
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
           mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/ || true
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          # Accept licenses (sdkmanager may close early causing broken pipe; ignore non-zero)
+          # Create licenses directory and write common accepted license fingerprints
+          mkdir -p $ANDROID_SDK_ROOT/licenses
+          cat > $ANDROID_SDK_ROOT/licenses/android-sdk-license <<'EOF'
+24333f8a63b6825ea9c5514f83c2829b004d1fee
+EOF
+          cat > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license <<'EOF'
+84831b9409646a918e30573bab4c9c91346d8ab1
+EOF
+          cat > $ANDROID_SDK_ROOT/licenses/intel-android-extra-license <<'EOF'
+d56f5187479451eabf01fb78af6dfcb131a6481e
+EOF
+
+          # Accept licenses (sdkmanager may close early causing broken pipe; ignore non-zero)
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses || true
+          # Install required packages; ignore non-zero exit to avoid license interactive failures
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-34" "build-tools;34.0.0" || true
         shell: bash
 
       - name: Add Android SDK to PATH
