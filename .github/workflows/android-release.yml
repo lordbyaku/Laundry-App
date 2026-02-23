@@ -19,9 +19,13 @@ jobs:
           java-version: '17'
 
       - name: Decode keystore from secret
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Decoding keystore..."
+            echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
+          else
+            echo "No KEYSTORE_BASE64 provided, skipping keystore creation"
+          fi
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
@@ -47,6 +51,12 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*','**/gradle-wrapper.properties') }}
+
+      - name: Run lint
+        run: ./gradlew lint --no-daemon
+
+      - name: Run unit tests
+        run: ./gradlew test --no-daemon
 
       - name: Build release APK
         run: ./gradlew clean assembleRelease --no-daemon
