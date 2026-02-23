@@ -65,6 +65,7 @@ dependencies {
 
     //Extended Library
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:4.1.2'
+    // fixed artifact name - use dotsindicator from Maven Central
+    implementation 'com.tbuonomo:dotsindicator:4.2'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 }
