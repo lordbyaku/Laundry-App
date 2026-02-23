@@ -25,6 +25,15 @@
             android:text="Status lisensi: belum aktif"
             android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/tvSyncStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sync: Off"
+            android:textSize="12sp"
+            android:textColor="#666666" />
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +68,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Scan Barcode untuk Update Progress" />
+            android:text="Scan Barcode untuk Progress" />
+
+        <Button
+            android:id="@+id/btnSync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Sinkronisasi ke Cloud (Supabase)"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF" />
+
 
         <TextView
             android:layout_width="wrap_content"

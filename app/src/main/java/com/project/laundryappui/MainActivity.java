@@ -19,6 +19,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.project.laundryappui.network.SupabaseClient;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_CUSTOMERS = "customers";
     private static final String KEY_ORDERS = "orders";
     private static final String KEY_LICENSE_END = "license_end";
+    private static final String KEY_TENANT_ID = "tenant_id";
+
 
     private static final long LICENSE_GRACE_DAYS = 3L;
 
@@ -68,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
     private TextView tvLicenseStatus;
+    private TextView tvSyncStatus;
     private OrderAdapter orderAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         tvLicenseStatus = findViewById(R.id.tvLicenseStatus);
+        tvSyncStatus = findViewById(R.id.tvSyncStatus);
         Button btnMonthly = findViewById(R.id.btnMonthly);
+
         Button btnYearly = findViewById(R.id.btnYearly);
         Button btnAddOrder = findViewById(R.id.btnAddOrder);
         Button btnScan = findViewById(R.id.btnScan);
+        Button btnSync = findViewById(R.id.btnSync);
         ListView listOrders = findViewById(R.id.listOrders);
 
         loadData();
@@ -94,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         btnYearly.setOnClickListener(v -> activateLicense(365));
         btnAddOrder.setOnClickListener(v -> showAddOrderDialog());
         btnScan.setOnClickListener(v -> startBarcodeScanner());
+        btnSync.setOnClickListener(v -> syncDataToSupabase());
+
 
         listOrders.setOnItemClickListener((parent, view, position, id) -> {
             Order order = orders.get(position);
@@ -114,6 +125,64 @@ public class MainActivity extends AppCompatActivity {
         updateLicenseText();
         Toast.makeText(this, "Lisensi berhasil diaktifkan.", Toast.LENGTH_SHORT).show();
     }
+
+    private void syncDataToSupabase() {
+        if (TextUtils.isEmpty(BuildConfig.SUPABASE_URL)) return;
+
+        String tenantId = prefs.getString(KEY_TENANT_ID, null);
+        if (tenantId == null) {
+            // Fetch tenant by code if not found
+            SupabaseClient.fetch("tenants", "id&kode=eq.DEMO-LAUNDRY", new SupabaseClient.Callback<JSONArray>() {
+                @Override
+                public void onSuccess(JSONArray result) {
+                    try {
+                        if (result.length() > 0) {
+                            String id = result.getJSONObject(0).getString("id");
+                            prefs.edit().putString(KEY_TENANT_ID, id).apply();
+                            runOnUiThread(() -> syncDataToSupabase());
+                        }
+                    } catch (Exception e) {
+                        Log.e("Sync", "Failed to parse tenant", e);
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    runOnUiThread(() -> tvSyncStatus.setText("Sync: Off (Tenant not found)"));
+                }
+            });
+            return;
+        }
+
+        runOnUiThread(() -> tvSyncStatus.setText("Sync: Syncing..."));
+
+        // Simplistic sync: upload all orders
+        for (Order order : orders) {
+            try {
+                JSONObject o = new JSONObject();
+                o.put("tenant_id", tenantId);
+                o.put("kode", order.code);
+                o.put("total_idr", order.price);
+                o.put("status", order.status.toLowerCase().replace(" ", "_"));
+                o.put("barcode_value", order.code);
+                
+                // Upsert logic (simplified via POST with Prefer: resolution=merge-duplicates if supported, 
+                // but here we just try to post)
+                SupabaseClient.post("orders", o, new SupabaseClient.Callback<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        runOnUiThread(() -> tvSyncStatus.setText("Sync: OK"));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        runOnUiThread(() -> tvSyncStatus.setText("Sync: Failed"));
+                    }
+                });
+            } catch (Exception ignored) {}
+        }
+    }
+
 
     private boolean isLicenseActive() {
         return System.currentTimeMillis() <= prefs.getLong(KEY_LICENSE_END, 0);
@@ -465,7 +534,10 @@ public class MainActivity extends AppCompatActivity {
                 .putString(KEY_CUSTOMERS, customerArray.toString())
                 .putString(KEY_ORDERS, orderArray.toString())
                 .apply();
+        
+        syncDataToSupabase();
     }
+
 
     static class Customer {
         final String name;
