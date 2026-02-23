@@ -64,17 +64,15 @@ jobs:
       - name: Write gradle properties (secrets)
         run: |
           mkdir -p ~/.gradle
-          cat > ~/.gradle/gradle.properties <<'EOF'
-SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-WA_REMINDER_API_URL=${{ secrets.WA_REMINDER_API_URL }}
-WA_REMINDER_API_KEY=${{ secrets.WA_REMINDER_API_KEY }}
-OWNER_EMAIL=${{ secrets.OWNER_EMAIL }}
-KEYSTORE_FILE=app/keystore.jks
-KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}
-KEY_ALIAS=${{ secrets.KEY_ALIAS }}
-KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-EOF
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > ~/.gradle/gradle.properties
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> ~/.gradle/gradle.properties
+          echo "WA_REMINDER_API_URL=${{ secrets.WA_REMINDER_API_URL }}" >> ~/.gradle/gradle.properties
+          echo "WA_REMINDER_API_KEY=${{ secrets.WA_REMINDER_API_KEY }}" >> ~/.gradle/gradle.properties
+          echo "OWNER_EMAIL=${{ secrets.OWNER_EMAIL }}" >> ~/.gradle/gradle.properties
+          echo "KEYSTORE_FILE=app/keystore.jks" >> ~/.gradle/gradle.properties
+          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> ~/.gradle/gradle.properties
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> ~/.gradle/gradle.properties
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> ~/.gradle/gradle.properties
 
       - name: Cache Gradle
         uses: actions/cache@v4
