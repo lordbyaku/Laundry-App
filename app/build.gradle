@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace "com.project.laundryappui"
     compileSdkVersion 34
     buildToolsVersion "34.0.0"
 
@@ -42,6 +43,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+    }
+    buildFeatures {
+        buildConfig true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
